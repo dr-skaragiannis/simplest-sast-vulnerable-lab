@@ -7,7 +7,7 @@ Contains multiple security vulnerabilities for detection by SAST tools.
 import os
 import subprocess
 import sqlite3
-import pickle
+import json
 import hashlib
 import random
 from flask import Flask, request, render_template_string, redirect, url_for, abort
@@ -87,17 +87,17 @@ def traverse():
 
 @app.route('/deserialize', methods=['POST', 'GET'])
 def deserialize():
-    # VULNERABILITY: Insecure Deserialization - pickle.loads on untrusted data
+    # FIXED: JSON can only describe data, never objects or code
     if request.method == 'POST':
         data = request.form.get('data', '')
         try:
-            obj = pickle.loads(bytes.fromhex(data))
+            obj = json.loads(data)
             return f'Deserialized object: {obj}'
         except Exception as e:
             return f'Deserialization error: {e}'
     return '''
     <form method="POST">
-        <label>Enter hex-encoded pickle data:</label><br>
+        <label>Enter JSON data:</label><br>
         <input type="text" name="data"><br>
         <input type="submit" value="Deserialize">
     </form>

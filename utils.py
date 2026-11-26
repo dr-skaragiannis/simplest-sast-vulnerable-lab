@@ -21,9 +21,9 @@ def process_user_input(data):
         result = ast.literal_eval(data['expression'])
         print(f"Eval result: {result}")
 
-    # VULNERABILITY: Unsafe YAML loading
+    # FIXED: safe_load builds only plain data types
     if 'yaml_data' in data:
-        parsed = yaml.load(data['yaml_data'], Loader=yaml.Loader)
+        parsed = yaml.safe_load(data['yaml_data'])
         print(f"YAML parsed: {parsed}")
 
     # VULNERABILITY: Regular expression denial of service (ReDoS) potential
