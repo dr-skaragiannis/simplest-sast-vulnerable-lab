@@ -38,13 +38,11 @@ function sendData() {
     xhr.send(JSON.stringify({ card: creditCard }));
 }
 
-// VULNERABILITY: Hardcoded API key in JavaScript
-var API_KEY = 'sk_live_1234567890abcdef';
+// FIXED: no key in the browser; the server calls the API on our behalf
 
 function makeAPICall() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://api.example.com/data', true);
-    xhr.setRequestHeader('Authorization', 'Bearer ' + API_KEY);
+    xhr.open('GET', '/api/data', true);
     xhr.send();
 }
 

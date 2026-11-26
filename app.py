@@ -15,8 +15,8 @@ from markupsafe import escape
 
 app = Flask(__name__)
 
-# VULNERABILITY: Hardcoded secret key
-app.config['SECRET_KEY'] = 'super-secret-key-12345'
+# FIXED: the secret key is read from the environment
+app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
 # Simple in-memory database setup
 def init_db():

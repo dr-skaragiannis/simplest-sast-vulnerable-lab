@@ -3,30 +3,27 @@ Configuration file with intentional hardcoded secrets for SAST testing.
 """
 import os
 
-# VULNERABILITY: Hardcoded database credentials
+# FIXED: credentials are read from the environment
 DATABASE_CONFIG = {
     'host': 'localhost',
     'port': 5432,
-    'username': 'admin',
-    'password': 'SuperSecretDBPassword123!',  # Hardcoded secret
+    'username': os.environ.get('DB_USER', ''),
+    'password': os.environ.get('DB_PASSWORD', ''),
     'database': 'prod_db'
 }
 
-# VULNERABILITY: API keys in source code
-AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE'
-AWS_SECRET_KEY = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
-STRIPE_SECRET_KEY = 'sk_live_1234567890abcdef'
+# FIXED: API keys are read from the environment
+AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN', '')
 
-# VULNERABILITY: Encryption key in source code
-ENCRYPTION_KEY = 'this-is-a-weak-encryption-key'
+ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', '')
 
-# VULNERABILITY: JWT secret in source code
-JWT_SECRET = 'secret-key-change-in-production'
+JWT_SECRET = os.environ.get('JWT_SECRET', '')
 
-# VULNERABILITY: Default admin credentials
-DEFAULT_ADMIN_USERNAME = 'admin'
-DEFAULT_ADMIN_PASSWORD = 'changeme123'  # Weak default password
+DEFAULT_ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', '')
+DEFAULT_ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', '')
 
 def get_database_connection():
     """Return database connection using hardcoded credentials."""

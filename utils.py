@@ -6,11 +6,12 @@ import ast
 import os
 import subprocess
 import yaml
+import hmac
 import json
 import re
 
-# VULNERABILITY: Hardcoded API key
-API_KEY = 'sk_live_1234567890abcdef'
+# FIXED: the API key is read from the environment
+API_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 
 def process_user_input(data):
     """Process user input with multiple vulnerabilities."""
@@ -43,8 +44,8 @@ def process_user_input(data):
 def insecure_password_check(password):
     """Insecure password checking with timing attack vulnerability."""
     # VULNERABILITY: Timing attack - string comparison not constant time
-    stored_password = "SuperSecret123!"
-    return password == stored_password
+    stored_password = os.environ.get('ADMIN_PASSWORD', '')
+    return hmac.compare_digest(password.encode(), stored_password.encode())
 
 def weak_encryption(text):
     """Weak encryption using XOR with short key."""
