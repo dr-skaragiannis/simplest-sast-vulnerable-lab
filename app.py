@@ -10,6 +10,7 @@ import pickle
 import hashlib
 import random
 from flask import Flask, request, render_template_string, redirect, url_for
+from utils import process_user_input
 
 app = Flask(__name__)
 
@@ -127,6 +128,12 @@ def improper_validation():
     user_id = request.args.get('id', '')
     # Assume user_id should be numeric, but no validation
     return f'User ID: {user_id}'
+
+@app.route('/process', methods=['POST'])
+def process():
+    # Lab exercise: user-controlled JSON now reaches utils.process_user_input()
+    data = request.get_json(silent=True) or {}
+    return process_user_input(data)
 
 if __name__ == '__main__':
     # VULNERABILITY: Running with debug mode enabled in production-like scenario
