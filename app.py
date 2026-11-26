@@ -7,6 +7,7 @@ Contains multiple security vulnerabilities for detection by SAST tools.
 import os
 import sqlite3
 import pickle
+import base64
 import hashlib
 import random
 from flask import Flask, request, render_template_string, redirect, url_for
@@ -87,7 +88,7 @@ def deserialize():
     if request.method == 'POST':
         data = request.form.get('data', '')
         try:
-            obj = pickle.loads(bytes.fromhex(data))
+            obj = pickle.loads(base64.b64decode(data))
             return f'Deserialized object: {obj}'
         except Exception as e:
             return f'Deserialization error: {e}'
