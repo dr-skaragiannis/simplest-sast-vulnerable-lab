@@ -3,7 +3,7 @@
 function displayUserContent() {
     // VULNERABILITY: DOM-based XSS using innerHTML
     var userInput = document.getElementById('userInput').value;
-    document.getElementById('output').innerHTML = userInput;
+    document.getElementById('output').textContent = userInput;
 }
 
 function loadExternalScript() {

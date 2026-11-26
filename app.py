@@ -48,8 +48,8 @@ def sqli():
     # VULNERABILITY: SQL Injection - user input directly concatenated
     username = request.args.get('user', '')
     cursor = DB_CONN.cursor()
-    query = f"SELECT * FROM users WHERE username = '{username}'"
-    cursor.execute(query)
+    query = "SELECT * FROM users WHERE username = ?"
+    cursor.execute(query, (username,))
     result = cursor.fetchall()
     return f'SQL Query: {query}<br>Result: {result}'
 
