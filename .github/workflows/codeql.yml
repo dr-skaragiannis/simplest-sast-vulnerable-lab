@@ -34,8 +34,6 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
           # Χωρίς "queries" τρέχει η σουίτα Default.
-          # Άσκηση: προσθέστε  queries: security-extended  και συγκρίνετε τα alerts.
-          queries: security-extended
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4

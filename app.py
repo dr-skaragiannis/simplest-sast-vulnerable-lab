@@ -7,11 +7,9 @@ Contains multiple security vulnerabilities for detection by SAST tools.
 import os
 import sqlite3
 import pickle
-import base64
 import hashlib
 import random
 from flask import Flask, request, render_template_string, redirect, url_for
-from utils import process_user_input
 
 app = Flask(__name__)
 
@@ -50,8 +48,8 @@ def sqli():
     # VULNERABILITY: SQL Injection - user input directly concatenated
     username = request.args.get('user', '')
     cursor = DB_CONN.cursor()
-    query = "SELECT * FROM users WHERE username = ?"
-    cursor.execute(query, (username,))
+    query = f"SELECT * FROM users WHERE username = '{username}'"
+    cursor.execute(query)
     result = cursor.fetchall()
     return f'SQL Query: {query}<br>Result: {result}'
 
@@ -88,7 +86,7 @@ def deserialize():
     if request.method == 'POST':
         data = request.form.get('data', '')
         try:
-            obj = pickle.loads(base64.b64decode(data))
+            obj = pickle.loads(bytes.fromhex(data))
             return f'Deserialized object: {obj}'
         except Exception as e:
             return f'Deserialization error: {e}'
@@ -129,12 +127,6 @@ def improper_validation():
     user_id = request.args.get('id', '')
     # Assume user_id should be numeric, but no validation
     return f'User ID: {user_id}'
-
-@app.route('/process', methods=['POST'])
-def process():
-    # Lab exercise: user-controlled JSON now reaches utils.process_user_input()
-    data = request.get_json(silent=True) or {}
-    return process_user_input(data)
 
 if __name__ == '__main__':
     # VULNERABILITY: Running with debug mode enabled in production-like scenario
