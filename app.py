@@ -10,7 +10,7 @@ import sqlite3
 import pickle
 import hashlib
 import random
-from flask import Flask, request, render_template_string, redirect, url_for
+from flask import Flask, request, render_template_string, redirect, url_for, abort
 
 app = Flask(__name__)
 
@@ -71,10 +71,12 @@ def xss():
 
 @app.route('/traverse')
 def traverse():
-    # VULNERABILITY: Path Traversal - user input used to construct file path
+    # FIXED: resolve the real path and require it to stay inside base_dir
     file_param = request.args.get('file', '')
-    base_dir = '/home/user/files/'
-    file_path = os.path.join(base_dir, file_param)
+    base_dir = os.path.realpath('/home/user/files')
+    file_path = os.path.realpath(os.path.join(base_dir, file_param))
+    if not file_path.startswith(base_dir + os.sep):
+        abort(403)
     try:
         with open(file_path, 'r') as f:
             content = f.read()
