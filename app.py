@@ -105,10 +105,10 @@ def deserialize():
 
 @app.route('/hash')
 def weak_hash():
-    # VULNERABILITY: Weak Cryptography - using MD5 (cryptographically broken)
+    # FIXED: SHA-256 instead of MD5
     data = request.args.get('data', '')
-    md5_hash = hashlib.md5(data.encode()).hexdigest()
-    return f'MD5 hash of "{escape(data)}": {md5_hash}'
+    digest = hashlib.sha256(data.encode()).hexdigest()
+    return f'SHA-256 hash of "{escape(data)}": {digest}'
 
 @app.route('/debug')
 def debug_info():
