@@ -76,7 +76,7 @@ def traverse():
     base_dir = os.path.realpath('/home/user/files')
     file_path = os.path.realpath(os.path.join(base_dir, file_param))
     if not file_path.startswith(base_dir + os.sep):
-        abort(403)
+        return 'Forbidden', 403
     try:
         with open(file_path, 'r') as f:
             content = f.read()
@@ -92,7 +92,7 @@ def deserialize():
         data = request.form.get('data', '')
         try:
             obj = json.loads(data)
-            return f'Deserialized object: {obj}'
+            return f'Deserialized object: {escape(obj)}'
         except Exception:
             app.logger.exception('Deserialization failed')
             return 'Invalid input', 400
