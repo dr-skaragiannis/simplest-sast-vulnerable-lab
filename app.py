@@ -11,6 +11,7 @@ import pickle
 import hashlib
 import random
 from flask import Flask, request, render_template_string, redirect, url_for, abort
+from markupsafe import escape
 
 app = Flask(__name__)
 
@@ -64,10 +65,10 @@ def cmd():
 
 @app.route('/xss')
 def xss():
-    # VULNERABILITY: Cross-Site Scripting - unsanitized user input in template
+    # FIXED: the value is passed to the template as a variable (auto-escaped)
     name = request.args.get('name', '')
-    template = f'<h1>Hello, {name}!</h1><p>Welcome to our site.</p>'
-    return render_template_string(template)
+    template = '<h1>Hello, {{ name }}!</h1><p>Welcome to our site.</p>'
+    return render_template_string(template, name=name)
 
 @app.route('/traverse')
 def traverse():
@@ -107,7 +108,7 @@ def weak_hash():
     # VULNERABILITY: Weak Cryptography - using MD5 (cryptographically broken)
     data = request.args.get('data', '')
     md5_hash = hashlib.md5(data.encode()).hexdigest()
-    return f'MD5 hash of "{data}": {md5_hash}'
+    return f'MD5 hash of "{escape(data)}": {md5_hash}'
 
 @app.route('/debug')
 def debug_info():

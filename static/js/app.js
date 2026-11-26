@@ -1,16 +1,18 @@
 // VULNERABILITY: Client-side XSS vulnerabilities
 
 function displayUserContent() {
-    // VULNERABILITY: DOM-based XSS using innerHTML
+    // FIXED: textContent inserts text, never HTML
     var userInput = document.getElementById('userInput').value;
-    document.getElementById('output').innerHTML = userInput;
+    document.getElementById('output').textContent = userInput;
 }
 
 function loadExternalScript() {
-    // VULNERABILITY: Loading external script from untrusted source
-    var scriptUrl = document.getElementById('scriptUrl').value;
+    // FIXED: only scripts from a fixed allow-list can be loaded
+    var allowed = { chart: '/static/js/chart.js', map: '/static/js/map.js' };
+    var key = document.getElementById('scriptUrl').value;
+    if (!Object.prototype.hasOwnProperty.call(allowed, key)) return;
     var script = document.createElement('script');
-    script.src = scriptUrl;
+    script.src = allowed[key];
     document.head.appendChild(script);
 }
 
