@@ -45,11 +45,11 @@ def index():
 
 @app.route('/sqli')
 def sqli():
-    # VULNERABILITY: SQL Injection - user input directly concatenated
+    # FIXED: parameterized query, the value is sent separately from the SQL
     username = request.args.get('user', '')
     cursor = DB_CONN.cursor()
-    query = f"SELECT * FROM users WHERE username = '{username}'"
-    cursor.execute(query)
+    query = "SELECT * FROM users WHERE username = ?"
+    cursor.execute(query, (username,))
     result = cursor.fetchall()
     return f'SQL Query: {query}<br>Result: {result}'
 
