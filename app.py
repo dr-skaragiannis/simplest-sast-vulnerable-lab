@@ -40,7 +40,6 @@ def index():
         <li><a href="/traverse?file=README.md">Path Traversal Example</a></li>
         <li><a href="/deserialize">Insecure Deserialization Example</a></li>
         <li><a href="/hash?data=test">Weak Cryptography Example</a></li>
-        <li><a href="/debug">Sensitive Data Exposure Example</a></li>
         <li><a href="/token">Insecure Randomness Example</a></li>
     </ul>
     '''
@@ -82,8 +81,9 @@ def traverse():
         with open(file_path, 'r') as f:
             content = f.read()
         return f'File content: <pre>{content}</pre>'
-    except Exception as e:
-        return f'Error reading file: {e}'
+    except Exception:
+        app.logger.exception('Cannot read %s', file_path)
+        return 'Error reading file', 500
 
 @app.route('/deserialize', methods=['POST', 'GET'])
 def deserialize():
@@ -93,8 +93,9 @@ def deserialize():
         try:
             obj = json.loads(data)
             return f'Deserialized object: {obj}'
-        except Exception as e:
-            return f'Deserialization error: {e}'
+        except Exception:
+            app.logger.exception('Deserialization failed')
+            return 'Invalid input', 400
     return '''
     <form method="POST">
         <label>Enter JSON data:</label><br>
@@ -109,16 +110,6 @@ def weak_hash():
     data = request.args.get('data', '')
     digest = hashlib.sha256(data.encode()).hexdigest()
     return f'SHA-256 hash of "{escape(data)}": {digest}'
-
-@app.route('/debug')
-def debug_info():
-    # VULNERABILITY: Sensitive Data Exposure - debug information leakage
-    debug_data = {
-        'app_config': dict(app.config),
-        'request_headers': dict(request.headers),
-        'environment_vars': dict(os.environ)
-    }
-    return f'<pre>{debug_data}</pre>'
 
 @app.route('/token')
 def generate_token():
@@ -135,5 +126,5 @@ def improper_validation():
     return f'User ID: {int(user_id)}'
 
 if __name__ == '__main__':
-    # VULNERABILITY: Running with debug mode enabled in production-like scenario
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # FIXED: debug only when explicitly enabled, local interface only
+    app.run(debug=os.environ.get('FLASK_DEBUG') == '1', host='127.0.0.1', port=5000)
