@@ -5,6 +5,7 @@ Contains multiple security vulnerabilities for detection by SAST tools.
 """
 
 import os
+import subprocess
 import sqlite3
 import pickle
 import hashlib
@@ -55,9 +56,10 @@ def sqli():
 
 @app.route('/cmd')
 def cmd():
-    # VULNERABILITY: Command Injection - unsanitized input passed to os.system
+    # FIXED: no shell, arguments passed as a list
     filename = request.args.get('file', '')
-    output = os.popen(f'ls -la {filename}').read()
+    output = subprocess.run(['ls', '-la', '--', filename],
+                            capture_output=True, text=True).stdout
     return f'Command output: <pre>{output}</pre>'
 
 @app.route('/xss')

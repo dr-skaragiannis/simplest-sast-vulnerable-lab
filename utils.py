@@ -2,6 +2,7 @@
 Utility functions with intentional vulnerabilities for SAST testing.
 """
 
+import ast
 import os
 import subprocess
 import yaml
@@ -14,9 +15,9 @@ API_KEY = 'sk_live_1234567890abcdef'
 def process_user_input(data):
     """Process user input with multiple vulnerabilities."""
 
-    # VULNERABILITY: eval on user input
+    # FIXED: literal_eval accepts only Python literals
     if 'expression' in data:
-        result = eval(data['expression'])
+        result = ast.literal_eval(data['expression'])
         print(f"Eval result: {result}")
 
     # VULNERABILITY: Unsafe YAML loading
@@ -33,10 +34,9 @@ def process_user_input(data):
         if match:
             print(f"Pattern matched: {match.group()}")
 
-    # VULNERABILITY: Shell injection via subprocess
+    # FIXED: no shell, arguments passed as a list
     if 'command' in data:
-        cmd = f"echo {data['command']}"
-        subprocess.run(cmd, shell=True)
+        subprocess.run(['echo', str(data['command'])])
 
     return "Processing complete"
 
