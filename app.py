@@ -128,10 +128,11 @@ def generate_token():
 
 @app.route('/validate')
 def improper_validation():
-    # VULNERABILITY: Improper Input Validation - no validation on user input
+    # FIXED: the id must be a positive integer
     user_id = request.args.get('id', '')
-    # Assume user_id should be numeric, but no validation
-    return f'User ID: {user_id}'
+    if not user_id.isdigit():
+        abort(400)
+    return f'User ID: {int(user_id)}'
 
 if __name__ == '__main__':
     # VULNERABILITY: Running with debug mode enabled in production-like scenario
