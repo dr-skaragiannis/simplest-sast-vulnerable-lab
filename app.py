@@ -9,7 +9,7 @@ import subprocess
 import sqlite3
 import json
 import hashlib
-import random
+import secrets
 from flask import Flask, request, render_template_string, redirect, url_for, abort
 from markupsafe import escape
 
@@ -113,8 +113,8 @@ def weak_hash():
 
 @app.route('/token')
 def generate_token():
-    # VULNERABILITY: Insecure Randomness - using random for security tokens
-    token = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz0123456789') for _ in range(32))
+    # FIXED: secrets uses the operating system's CSPRNG
+    token = secrets.token_urlsafe(32)
     return f'Generated token: {token}'
 
 @app.route('/validate')

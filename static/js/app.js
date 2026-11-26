@@ -46,11 +46,9 @@ function makeAPICall() {
     xhr.send();
 }
 
-// VULNERABILITY: Insecure random number generation for security purposes
+// FIXED: crypto.getRandomValues is a CSPRNG
 function generateToken() {
-    var token = '';
-    for (var i = 0; i < 32; i++) {
-        token += Math.random().toString(36).substr(2, 1);
-    }
-    return token;
+    var bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
 }
